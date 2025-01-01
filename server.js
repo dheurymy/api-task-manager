@@ -17,6 +17,11 @@ const secret = process.env.JWT_SECRET; // Obtém a chave secreta do JWT a partir
 app.use(cors()); // Utiliza o middleware CORS
 app.use(express.json()); // Utiliza o middleware para parsear o corpo das requisições como JSON
 
+app.use((req, res, next) => { 
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin'); 
+  next(); 
+});
+
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true, // Configuração para usar o novo parser de URL do MongoDB
   useUnifiedTopology: true, // Configuração para usar a nova engine de topo do MongoDB
