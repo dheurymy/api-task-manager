@@ -12,6 +12,7 @@ dotenv.config(); // Carrega as variáveis de ambiente do arquivo .env
 const app = express(); // Cria uma instância do aplicativo Express
 const PORT = process.env.PORT || 5000; // Define a porta do servidor a partir da variável de ambiente ou usa 5000 como padrão
 const MONGO_URI = process.env.MONGO_URI; // Obtém a URI de conexão do MongoDB a partir da variável de ambiente
+const secret = process.env.JWT_SECRET; // Obtém a chave secreta do JWT a partir da variável de ambiente
 
 app.use(cors()); // Utiliza o middleware CORS
 app.use(express.json()); // Utiliza o middleware para parsear o corpo das requisições como JSON
@@ -29,7 +30,7 @@ const authMiddleware = (req, res, next) => {
   if (!token) return res.status(401).json({ message: 'Autorização negada' }); // Verifica se o token está presente, caso contrário, retorna erro 401
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verifica o token usando a chave secreta
+    const decoded = jwt.verify(token, secret); // Verifica o token usando a chave secreta
     req.user = decoded; // Define o usuário decodificado no objeto de requisição
     next(); // Passa para o próximo middleware ou rota
   } catch (err) {
@@ -67,7 +68,7 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Credenciais inválidas' }); // Retorna mensagem de credenciais inválidas com status 401
     }
 
-    const token = jwt.sign({ userId: user._id, name: user.name, email: user.email }, process.env.JWT_SECRET, { // Gera um token JWT com o ID do usuário
+    const token = jwt.sign({ userId: user._id, name: user.name, email: user.email }, secret, { // Gera um token JWT com o ID do usuário
       expiresIn: '1h', // Define a expiração do token para 1 hora
     });
 
